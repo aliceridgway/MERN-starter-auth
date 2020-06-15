@@ -1,0 +1,54 @@
+mixin entryForm(entry={})
+
+    
+    form.entry-form(action=`/add/${entry.id || ''}` method="POST")
+
+        if entry.name
+            h3 Edit #{entry.type}
+        else
+            h3 New Entry
+
+        label(for="type") Type
+        .entry-form__type
+            - const typeChoices = ['Task','Event','Note']
+
+            ul
+                each choice in typeChoices
+                    li.entry-form__type__choice
+                        input(type="radio" name="type" id=choice value=choice checked=(entry.type == choice))
+                        label(for=choice) #{choice}
+
+        label(for="name")
+        input(type="text" name="name" placeholder="Add entry" value=(entry.name || ''))
+
+
+        .entry-form__tags
+
+            label(for="tags") Tags
+
+            - const choices = ['Work', 'Home', 'Family', 'DIY', 'Money']
+            - const tags = entry.tags || []
+
+            ul
+                each choice in choices
+                    li.entry-form__tags__choice               
+                        input(type="checkbox" id="choice" value=choice name="tags" checked=(tags.includes(choice)))
+                        label(for=choice) #{choice}
+        
+        if entry.name
+            input(type="submit" value="Update")
+            a.entry-form__cancel(href="/") cancel
+        else
+            input(type="submit" value="Add")  
+        
+        if locals.flashes
+            .flash-messages
+                - const categories = Object.keys(locals.flashes)
+                each category in categories
+                    each message in flashes[category]
+                        .flash(class=`flash--${category}`)
+                            p.flash__text!= message
+                            button.flash__remove(onClick="this.parentElement.remove()") &times;
+                  
+        
+
