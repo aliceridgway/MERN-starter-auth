@@ -1,0 +1,37 @@
+mixin journal(entries={})
+    
+    .journal
+        h2 Entries
+
+        if Object.keys(entries).length===0
+            p.empty-journal This journal doesn't have any entries! Why not create a task with the form on your right?
+
+        table.entries
+
+            each entry in entries
+                tr.entry
+                    td
+                        case entry.type
+                            when 'Event'
+                                img.entry__icon(src="/images/event.svg")
+                            when 'Note'
+                                img.entry__icon(src="/images/note.svg")
+                            when 'Task'
+                                form.task-toggle(method="POST",action=`/entry/${entry._id}/complete`)
+                                    button(type="submit")
+                                        if entry.complete
+                                            img.entry__icon(src="/images/complete.svg")
+                                        else
+                                            img.entry__icon(src="/images/to-do.svg")
+                                
+                    td.entry__name #{entry.name} 
+
+                    td.entry__tags
+                        each tag in entry.tags
+                            span.entry__action.entry__tag #{tag}
+                            
+                    td
+                        a.entry__action.entry__edit(href=`/edit/${entry._id}`) edit
+                    td
+                        form(method='POST',action=`/entry/${entry._id}/delete`)
+                            input.entry__action.entry__delete(type="submit" value="delete")
